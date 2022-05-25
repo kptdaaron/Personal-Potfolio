@@ -14,7 +14,7 @@ terraform {
 # in our case provider is aws.
 provider "aws" {
     profile = "default"
-    region = "us-east-1"
+    region = "us-east-2"
 }
 
 ## CREATING DEFAULT VPC
@@ -125,16 +125,50 @@ resource "aws_security_group" "security_group" {
     }
 }
 
+## S3 BUCKET
+
+# this resource will create an s3 bucket with name personal-portfolio
+# this bucket will contain all our website static files
+
+resource "aws_s3_bucket" "s3_bucket_jactrajano_portfolio" {
+    bucket = "jactrajano-portfolio"
+
+    tags = {
+        Name = "static file as bucket"
+    }
+}
+
+resource "aws_s3_bucket_acl" "s3_bucket_acl" {
+    bucket = aws_s3_bucket.s3_bucket_jactrajano_portfolio.id
+    acl = "private"
+}
+
+# here we are blocking all the public access to this bucket,
+# we want the objects from this bucket to be accessible by via Cloudfround distribution
+
+resource "aws_s3_bucket_public_access_block" "s3_block_access" {
+    bucket = aws_s3_bucket.s3_bucket_jactrajano_portfolio.id
+    block_public_acls = true
+    block_public_policy = true
+    restrict_public_buckets = true
+    ignore_public_acls = true
+}
+
+# this will create an s3 origin id which wil be used in Cloudfront to set origin as s3 bucket
+locals {
+    s3_origin_id = "s3Origin"
+}
+
 ## CREATING EC2 INSTANCE
 
 # this resource will create an ec2 instance with specified specs
 resource "aws_instance" "ec2_instance" {
-    ami                 = "ami-0022f774911c1d690"
+    ami                 = "ami-0fa49cc9dc8d62c84"
     instance_type       = "t2.micro"
     key_name            = var.key_name
     security_groups     = [aws_security_group.security_group.name]
     tags = {
-        Name = "webServer"
+        Name = "Personal Website"
     }
 }
 
@@ -186,40 +220,6 @@ resource "null_resource" "configure_server" {
     }
 }
 
-## S3 BUCKET
-
-# this resource will create an s3 bucket with name personal-portfolio
-# this bucket will contain all our website static files
-
-resource "aws_s3_bucket" "s3_bucket" {
-    bucket = "personal-portfolio"
-
-    tags = {
-        Name = "static file as bucket"
-    }
-}
-
-resource "aws_s3_bucket_acl" "s3_bucket_acl" {
-    bucket = aws_s3_bucket.s3_bucket.id
-    acl = "private"
-}
-
-# here we are blocking all the public access to this bucket,
-# we want the objects from this bucket to be accessible by via Cloudfround distribution
-
-resource "aws_s3_bucket_public_access_block" "s3_block_access" {
-    bucket = aws_s3_bucket.s3_bucket.id
-    block_public_acls = true
-    block_public_policy = true
-    restrict_public_buckets = true
-    ignore_public_acls = true
-}
-
-# this will create an s3 origin id which wil be used in Cloudfront to set origin as s3 bucket
-locals {
-    s3_origin_id = "s3Origin"
-}
-
 ## CloudFront Distribution
 
 # origin access identity for distribution
@@ -231,7 +231,7 @@ resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
 resource "aws_cloudfront_distribution" "distribution" {
     origin {
         # this is the domain name of s3 bucket which we created
-        domain_name = aws_s3_bucket.s3_bucket.bucket_regional_domain_name
+        domain_name = aws_s3_bucket.s3_bucket_jactrajano_portfolio.bucket_regional_domain_name
         # here we are using that s3 origin id
         origin_id = local.s3_origin_id
 
@@ -283,7 +283,7 @@ resource "aws_cloudfront_distribution" "distribution" {
 data "aws_iam_policy_document" "s3_policy" {
     statement {
         actions     = ["s3:GetObject"]
-        resources   = ["${aws_s3_bucket.s3_bucket.arn}/*"]
+        resources   = ["${aws_s3_bucket.s3_bucket_jactrajano_portfolio.arn}/*"]
 
         principals {
             type        = "AWS"
@@ -293,7 +293,7 @@ data "aws_iam_policy_document" "s3_policy" {
 
     statement {
         actions     = ["s3:ListBucket"]
-        resources   = ["${aws_s3_bucket.s3_bucket.arn}"]    
+        resources   = ["${aws_s3_bucket.s3_bucket_jactrajano_portfolio.arn}"]    
 
         principals {
             type        = "AWS"
@@ -304,7 +304,7 @@ data "aws_iam_policy_document" "s3_policy" {
 
 # this will update bucket policy for the distribution we created above
 resource "aws_s3_bucket_policy" "update_s3_policy" {
-    bucket = aws_s3_bucket.s3_bucket.id
+    bucket = aws_s3_bucket.s3_bucket_jactrajano_portfolio.id
     policy = data.aws_iam_policy_document.s3_policy.json
 }
 
