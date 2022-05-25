@@ -186,3 +186,32 @@ resource "null_provisioner" "configure_server" {
     }
 }
 
+## S3 BUCKET
+
+# this resource will create an s3 bucket with name personal-portfolio
+# this bucket will contain all our website static files
+
+resource "aws_s3_bucket" "s3_bucket" {
+    bucket = "personal-portfolio"
+    acl = "private"
+
+    tags = {
+        Name = "static fileas bucket"
+    }
+}
+
+# here we are blocking all the public access to this bucket,
+# we want the objects from this bucket to be accessible by via Cloudfround distribution
+
+resource "aws_s3_bucket_public_access_block" " s3_block_access" {
+    bucket = aws_s3_bucket.s3_bucket.id
+    block_public_acls = true
+    block_public_policy = true
+    restrict_public_buckets = true
+    ignore_public_acls = true
+}
+
+# this will create an s3 origin id which wil be used in Cloudfront to set origin as s3 bucket
+locals {
+    s3_origin_id = "s3Origin"
+}
