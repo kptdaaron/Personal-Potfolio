@@ -273,6 +273,8 @@ resource "aws_cloudfront_distribution" "distribution" {
     }
 }
 
+## UPDATING S3 BUCKET POLICY
+
 # this section creates an s3 policy to allow distribution to read objects from bucket
 data "aws_iam_policy_document" "s3_policy" {
     statement {
@@ -300,4 +302,14 @@ data "aws_iam_policy_document" "s3_policy" {
 resource "aws_s3_bucket_policy" "update_s3_policy" {
     bucket = aws_s3_bucket.s3_bucket.id
     policy = data.aws_iam_policy_document.s3_policy.json
+}
+
+# instance ip
+output "instance_ip" {
+    value = aws.instance.ec2_instance.public_ip
+}
+
+# distribution id
+output "distribution_domain" {
+    value = aws_cloudfront_distribution.distribution.domain_name
 }
