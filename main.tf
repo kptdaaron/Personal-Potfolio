@@ -8,12 +8,16 @@ terraform {
     required_version = ">= 0.14.9"
 }
 
+# CREATING PROVIDER AND PROFILE
+
 # provider lets terraform know which api to use.
 # in our case provider is aws.
 provider "aws" {
     profile = "default"
     region = "us-east-1"
 }
+
+## CREATING DEFAULT VPC
 
 # this is default vpc in aws ,
 # this niether be created during terraform apply and nor be destroyed during terraform destroy
@@ -24,10 +28,8 @@ resource "aws_default_vpc" "default_vpc" {
   }
 }
 
-# resource "aws_instance" "personal_portfolio" {
-#     ami = "ami-02cb75f995890cd96"
-#     instance_type = "t2.micro"
-# }
+
+## CREATING VARIABLES
 
 # key variable for referencing
 variable "key_name" {
@@ -38,6 +40,8 @@ variable "key_name" {
 variable "base_path" {
     default = "/home/jactrajano/projects/Personal-Potfolio/"
 }
+
+## CREATING PRIVATE KEY AND KEY PAIR
 
 # this will create a key with RSA algorithm with 4096 rsa bits
 resource "tls_private_key" "private_key" {
@@ -58,6 +62,8 @@ resource "local_file" "save_key" {
     content = tls_private_key.private_key.private_key_pem
     filename = "${var.base_path}${var.key_name}.pem"
 }
+
+## CREATING SECURITY GROUP
 
 # this resource will create new security with specified inbound and outbound rules
 resource "aws_security_group" "security_group" {
@@ -119,6 +125,8 @@ resource "aws_security_group" "security_group" {
     }
 }
 
+## CREATING EC2 INSTANCE
+
 # this resource will create an ec2 instance with specified specs
 resource "aws_instance" "ec2_instance" {
     ami                 = "ami-0022f774911c1d690"
@@ -129,6 +137,8 @@ resource "aws_instance" "ec2_instance" {
         Name = "webServer"
     }
 }
+
+## CREATING EBS VOLUME
 
 # this resource will create an ebs volume with 1gb in size,
 # we are creating this volume for persistent storage of critical data
@@ -151,3 +161,28 @@ resource "aws_volume_attachment" "attach_volume" {
     # else you will lose your data
     force_detach = true
 }
+
+
+## CREATING NULL RESOURCE AND PROVISIONER
+
+# provisioner to execute Ansible playbook
+resource "null_provisioner" "configure_server" {
+
+# execution in terraform has no sequence in execution, so if e.g. resource 3 is dependent on resource 1 & 2,
+# we can use depends_on paramater to pass the list of resources on which a resource is dependent
+    depends_on = [aws_instance.ec2_instance, aws_ebs_volume.ebs_volume, aws_volume_attachment.attach_volume]
+
+    # provisioners are used to execute command on local or remote machine. Here we are using local-exec
+    provisioner "local-exec" {
+
+    # this command will be executed on local mahine and will change the persmission of key file which we saved previously
+        command = "chmod 400 ${var.base_path}${var.key_name}.pem"
+    }
+    provisioner "local-exec" {
+    # this command will connect to ec2 instance and run the playbook on that instance
+    # ANSIBLE_HOST_KEY_CHECKING=False means it will not give warning for host authenticity,
+    # else we have to manually pass yes on terminal
+        command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ec2-user --private-key ${var.base_path}${var.key_name}.pem -i '${aws.instance.ec2_instance.public_ip},' playbook.yml"    
+    }
+}
+
