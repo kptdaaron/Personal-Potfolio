@@ -43,7 +43,7 @@
     command: docker run -dit --name jenkins -u root -p 8080:8080 -v /data/:/var/jenkins_home jenkins/jenkins
   # making a workspace and job directory becuase this dir are created when we create a job,
   # but we want to bind /data/workspace/website to htdocs
-  - name: Make workspace directory for jenkins job
+  - name: Create workspace directory for jenkins job
     file:
       path: /data/workspace/website
       state: directory

@@ -45,7 +45,7 @@ variable "base_path" {
 
 # this will create a key with RSA algorithm with 4096 rsa bits
 resource "tls_private_key" "private_key" {
-    algorith = "RSA"
+    algorithm = "RSA"
     rsa_bits = 4096
 }
 
@@ -69,7 +69,7 @@ resource "local_file" "save_key" {
 resource "aws_security_group" "security_group" {
     name                    = "allow_tcp"
     description             = "Allow TCP inbound traffic"
-    vpc_id                  = aws_default_vpc.default_vpc_id
+    vpc_id                  = aws_default_vpc.default_vpc.id
 
     # creating inbound rule for tcp port 8080 to use Jenkins
     ingress {
@@ -142,7 +142,7 @@ resource "aws_instance" "ec2_instance" {
 
 # this resource will create an ebs volume with 1gb in size,
 # we are creating this volume for persistent storage of critical data
-resource "aws_ebs_volume "ebs_volume" {
+resource "aws_ebs_volume" "ebs_volume" {
     availability_zone   = aws_instance.ec2_instance.availability_zone
     size                = 1
     tags = {
@@ -153,7 +153,7 @@ resource "aws_ebs_volume "ebs_volume" {
 # this will attach the above created volume to ec2 instance at /dev/sdf
 resource "aws_volume_attachment" "attach_volume" {
     device_name         = "/dev/sdf"
-    volume_id           = aws_ebs_volume.ebs_volume.vpc_id
+    volume_id           = aws_ebs_volume.ebs_volume.id
     instance_id         = aws_instance.ec2_instance.id
     # !! warning
     # dont use force detach and preserve this volume from destroying if using in production or,
@@ -166,7 +166,7 @@ resource "aws_volume_attachment" "attach_volume" {
 ## CREATING NULL RESOURCE AND PROVISIONER
 
 # provisioner to execute Ansible playbook
-resource "null_provisioner" "configure_server" {
+resource "null_resource" "configure_server" {
 
 # execution in terraform has no sequence in execution, so if e.g. resource 3 is dependent on resource 1 & 2,
 # we can use depends_on paramater to pass the list of resources on which a resource is dependent
@@ -182,7 +182,7 @@ resource "null_provisioner" "configure_server" {
     # this command will connect to ec2 instance and run the playbook on that instance
     # ANSIBLE_HOST_KEY_CHECKING=False means it will not give warning for host authenticity,
     # else we have to manually pass yes on terminal
-        command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ec2-user --private-key ${var.base_path}${var.key_name}.pem -i '${aws.instance.ec2_instance.public_ip},' playbook.yml"    
+        command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ec2-user --private-key ${var.base_path}${var.key_name}.pem -i '${aws_instance.ec2_instance.public_ip},' playbook.yml"    
     }
 }
 
@@ -193,17 +193,21 @@ resource "null_provisioner" "configure_server" {
 
 resource "aws_s3_bucket" "s3_bucket" {
     bucket = "personal-portfolio"
-    acl = "private"
 
     tags = {
-        Name = "static fileas bucket"
+        Name = "static file as bucket"
     }
+}
+
+resource "aws_s3_bucket_acl" "s3_bucket_acl" {
+    bucket = aws_s3_bucket.s3_bucket.id
+    acl = "private"
 }
 
 # here we are blocking all the public access to this bucket,
 # we want the objects from this bucket to be accessible by via Cloudfround distribution
 
-resource "aws_s3_bucket_public_access_block" " s3_block_access" {
+resource "aws_s3_bucket_public_access_block" "s3_block_access" {
     bucket = aws_s3_bucket.s3_bucket.id
     block_public_acls = true
     block_public_policy = true
@@ -245,8 +249,8 @@ resource "aws_cloudfront_distribution" "distribution" {
         cached_methods = ["GET", "HEAD"]
         target_origin_id = local.s3_origin_id
 
-        forwarding_values {
-            query_string = False
+        forwarded_values {
+            query_string = false
             
             cookies {
                 forward = "none"
@@ -255,7 +259,7 @@ resource "aws_cloudfront_distribution" "distribution" {
 
         # here we are defining to redirect http traffic to https
         viewer_protocol_policy = "redirect-to-https"
-        main_ttl = 0
+        min_ttl = 0
         default_ttl = 3600
         max_ttl = 86400
     }
@@ -279,7 +283,7 @@ resource "aws_cloudfront_distribution" "distribution" {
 data "aws_iam_policy_document" "s3_policy" {
     statement {
         actions     = ["s3:GetObject"]
-        resources   = ["${aws.s3_bucket.s3_bucket.arn}/*"]
+        resources   = ["${aws_s3_bucket.s3_bucket.arn}/*"]
 
         principals {
             type        = "AWS"
@@ -289,11 +293,11 @@ data "aws_iam_policy_document" "s3_policy" {
 
     statement {
         actions     = ["s3:ListBucket"]
-        resources   = ["${aws_s3_bucket.s3_bucket_arn}"]    
+        resources   = ["${aws_s3_bucket.s3_bucket.arn}"]    
 
         principals {
             type        = "AWS"
-            identifiers = ["${aws_cloudfront_origin_access_identity.origin_access_identity_iam_arn}"]
+            identifiers = ["${aws_cloudfront_origin_access_identity.origin_access_identity.iam_arn}"]
         }
     }
 }
@@ -306,7 +310,7 @@ resource "aws_s3_bucket_policy" "update_s3_policy" {
 
 # instance ip
 output "instance_ip" {
-    value = aws.instance.ec2_instance.public_ip
+    value = aws_instance.ec2_instance.public_ip
 }
 
 # distribution id
