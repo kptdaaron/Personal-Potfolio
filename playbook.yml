@@ -1,0 +1,62 @@
+---
+- hosts: all
+  become: true # this will login root
+  tasks:
+  # make a directory /data where we will mount the volume
+  - name: Create data directory
+    file:
+      path: /data
+      state: directory
+  # create a primary partition of the ebs volume we attached
+  - name: create a new primary partition
+    parted:
+      device: /dev/xvdf
+      number: 1
+      state: present
+  # formate the partition with ext4
+  - name: Formats volume
+    filesystem:
+    fstype: ext4
+    dev: /dev/xvdf
+  # mount volume at /data
+  - name: Mount formatted volume on /data
+    mount:
+      path: /data
+      src: /dev/xvdf
+      fstype: ext4
+      state: mounted
+  # installing docker
+  - name: install docker
+    apt:
+      name: docker
+      state: latest
+  # enabling docker service
+  - name: Enable docker daemon
+    service:
+      name: docker
+      enabled: yes
+  # pulling jenkins from dockerhub
+  - name: Pull Jenkins image
+    command: docker pull jenkins/jenkins
+  # launching a new container with jenkins image
+  - name: Run Jenkins container
+    command: docker run -dit --name jenkins -u root -p 8080:8080 -v /data/:/var/jenkins_home jenkins/jenkins
+  # making a workspace and job directory becuase this dir are created when we create a job,
+  # but we want to bind /data/workspace/website to htdocs
+  - name: Make workspace directory for jenkins job
+    file:
+      path: /data/workspace/website
+      state: directory
+  # pulling httpd image from dockerhub
+  - name: Pull Apache image
+    command: docker pull httpd
+  # launching a new container with Apache image
+  - name: Run Apache
+    command: docker run -dit --name apache -p 80:80 -v /data/workspace/website:/usr/share/local/apache2/htdocks/ httpd
+  # printing initialAdminPassword on terminal
+  - name: Echo initial Jenkins password
+    command: cat inititalAdminPassword
+    register: output
+    args:
+      chdir: /data/secrets/
+  - debug: var=output.stdout_lines
