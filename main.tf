@@ -219,13 +219,11 @@ locals {
 ## CloudFront Distribution
 
 # origin access identity for distribution
-
 resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
     comment = "cloudfront distribution identity"
 }
 
 # distribution
-
 resource "aws_cloudfront_distribution" "distribution" {
     origin {
         # this is the domain name of s3 bucket which we created
@@ -273,5 +271,33 @@ resource "aws_cloudfront_distribution" "distribution" {
     viewer_certificate {
         cloudfront_default_certificate = true
     }
+}
 
+# this section creates an s3 policy to allow distribution to read objects from bucket
+data "aws_iam_policy_document" "s3_policy" {
+    statement {
+        actions     = ["s3:GetObject"]
+        resources   = ["${aws.s3_bucket.s3_bucket.arn}/*"]
+
+        principals {
+            type        = "AWS"
+            identifiers = ["${aws_cloudfront_origin_access_identity.origin_access_identity.iam_arn}"]
+        }
+    }
+
+    statement {
+        actions     = ["s3:ListBucket"]
+        resources   = ["${aws_s3_bucket.s3_bucket_arn}"]    
+
+        principals {
+            type        = "AWS"
+            identifiers = ["${aws_cloudfront_origin_access_identity.origin_access_identity_iam_arn}"]
+        }
+    }
+}
+
+# this will update bucket policy for the distribution we created above
+resource "aws_s3_bucket_policy" "update_s3_policy" {
+    bucket = aws_s3_bucket.s3_bucket.id
+    policy = data.aws_iam_policy_document.s3_policy.json
 }
