@@ -14,7 +14,7 @@ terraform {
 # in our case provider is aws.
 provider "aws" {
     profile = "default"
-    region = "us-east-2"
+    region = "us-east-1"
 }
 
 ## CREATING DEFAULT VPC
