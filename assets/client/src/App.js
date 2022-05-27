@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import { FaAws, FaDocker, FaJenkins } from 'react-icons/fa';
 import { SiTerraform, SiAnsible } from 'react-icons/si';
