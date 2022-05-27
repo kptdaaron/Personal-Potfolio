@@ -1,22 +1,21 @@
 import logo from './logo.svg';
 import './App.css';
+import { FaAws, FaDocker, FaJenkins } from 'react-icons/fa';
+import { SiTerraform, SiAnsible } from 'react-icons/si';
+
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+        <h1>This site is under development</h1>
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <div>
+          <h3>Powered by:</h3>
+          <FaAws size={80}/> <SiTerraform size={80}/> <SiAnsible size={80}/> <FaDocker size={80}/> <FaJenkins size={80}/>
+        </div>
+        
       </header>
     </div>
   );
