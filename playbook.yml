@@ -42,13 +42,22 @@
     - name: Pull Jenkins image
       command: docker pull jenkins/jenkins:lts-jdk11
 
-    - name: Create data directory
-      file:
-        path: /data
-        state: directory
+    # - name: Create data directory
+    #   file:
+    #     path: /data
+    #     state: directory
+
+    # - name: Run Jenkins container
+    #   command: docker run -dit --name jenkins -u root -p 8080:8080 -v /data/:/var/jenkins_home jenkins/jenkins:lts-jdk11
 
     - name: Run Jenkins container
-      command: docker run -dit --name jenkins -u root -p 8080:8080 -v /data/:/var/jenkins_home jenkins/jenkins:lts-jdk11
+      command: docker run --name jenkins-docker --rm --detach \
+                  --privileged --network jenkins --network-alias docker \
+                  --env DOCKER_TLS_CERTDIR=/certs \
+                  --volume jenkins-docker-certs:/certs/client \
+                  --volume jenkins-data:/var/jenkins_home \
+                  --publish 3000:3000 --publish 2376:2376 \
+                  docker:dind --storage-driver overlay2
 
     # making a workspace and job directory becuase this dir are created when we create a job,
     # but we want to bind /data/workspace/website to htdocs

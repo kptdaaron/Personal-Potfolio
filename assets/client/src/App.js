@@ -1,22 +1,20 @@
-import './App.css';
-import { FaAws, FaDocker, FaJenkins } from 'react-icons/fa';
-import { SiTerraform, SiAnsible } from 'react-icons/si';
-
+import { Flex, VStack, Heading, IconButton, Spacer, Link, Button, Text, HStack, Box, Container } from '@chakra-ui/react';
+import NavBar from "./components/NavBar"
+import Profile from "./components/Profile";
+import Social from "./components/Social";
 
 function App() {
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-        <h1>This site is under development</h1>
-        </p>
-        <div>
-          <h3>Powered by:</h3>
-          <FaAws size={80}/> <SiTerraform size={80}/> <SiAnsible size={80}/> <FaDocker size={80}/> <FaJenkins size={80}/>
-        </div>
-        
-      </header>
-    </div>
+    <>
+      <NavBar />
+      <VStack p={5}>
+        <Flex w="80%">
+          <Profile />
+          <Social />
+        </Flex>
+      </VStack>
+    </>
   );
 }
 

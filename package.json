@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@fontsource/assistant": "^4.5.9",
+    "@fontsource/damion": "^4.5.5",
+    "@fontsource/fira-code": "^4.5.10",
+    "@fontsource/raleway": "^4.5.9"
+  }
+}
