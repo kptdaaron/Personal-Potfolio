@@ -1,4 +1,143 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Marck+Script&display=swap");
+
 * {
-    margin: 0;
-    padding: 0;
+  /* box-sizing: border-box; */
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --header-height: 3rem;
+
+  /* Custom colors */
+  --hue-color: 240;
+  --primary-color: #300;
+  --secondary-color: hsl(var(--hue-color), 69%, 61%);
+  --alt-color: hsl(var(--hue-color), 57%, 53%);
+  --lighter-color: hsl(var(--hue-color), 92%, 85);
+
+  /* Text colors */
+  --title-color: #300;
+  --text-primary: #000;
+  --text-secondary: hsl(var(--hue-color), 8%, 65%);
+  --input-color: hsl(var(--hue-color), 70%, 96%);
+
+  /* Box colors */
+  --body-color: hsl(var(--hue-color), 60%, 99%);
+
+  --container-color: #fff;
+  /* Custom font sizes */
+  --big-font-size: 2rem;
+  --normal-font-size: 0.9rem;
+  --small-font-size: 0.8rem;
+  --smaller-font-size: 0.75rem;
+  --h1-font-size: 1.5rem;
+  --h2-font-size: 1.25rem;
+  --h3-font-size: 1.125rem;
+
+  /* font weight */
+  --font-medium: 500;
+  --font-semibold: 600;
+
+  /* margins */
+  --m-0-25: 0.25rem;
+  --m-0-5: 0.5rem;
+  --m-0-75: 0.75rem;
+  --m-1: 1rem;
+  --m-1-5: 1.5rem;
+  --m-2: 2rem;
+  --m-2-5: 2.5rem;
+  --m-3: 3rem;
+
+  /* Stacking */
+  --z-tooltip: 10;
+  --z-fixed: 100;
+  --z-modal: 1000;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  margin: auto;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--title-color);
+  font-weight: var(--font-semibold);
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.nav-container {
+  border: #000 solid 1px;
+  margin: 2rem 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-logo,
+.nav-toggle {
+  color: var(--title-color);
+  font-weight: var(--font-semibold);
+}
+
+.nav-logo {
+  font-size: var(--h1-font-size);
+  font-family: "Marck Script";
+}
+
+.nav-list {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.header {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-fixed);
+  background-color: var(--body-color);
+}
+
+@media screen and (max-width: 768px) {
+  .list-container {
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--body-color);
+    padding: 2rem 1.5rem 4rem;
+    box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.15);
+    border-radius: 1.5rem 1.5rem 0 0;
+    transition: 0.3s;
+  }
+}
+
+/* Animations, Effects, Transitions */
+
+@keyframes transitionIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: (1);
+    transform: translateY(0);
+  }
 }
