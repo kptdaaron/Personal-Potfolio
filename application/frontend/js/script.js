@@ -24,6 +24,18 @@ const navLinkCloseMenu = () => {
         menu.navMenu.classList.remove('show-menu')
     }))
 }
+
+const closeMenuClickOutside = () => {
+    menu.body.addEventListener('click', (e) => {
+        if (!e.target.closest('#nav-menu')) {
+            if (!e.target.closest('#menu-toggle')) {
+                // alert('clicked outside the menu area')
+                menu.navMenu.classList.remove('show-menu')
+            }
+        }
+    })
+}
 showMenu();
 closeMenu();
 navLinkCloseMenu();
+closeMenuClickOutside();
