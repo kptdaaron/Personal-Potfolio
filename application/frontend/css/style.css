@@ -56,6 +56,7 @@
   --z-modal: 1000;
 }
 
+/* Base */
 body {
   font-family: "Poppins", sans-serif;
   margin: auto;
@@ -65,6 +66,19 @@ body {
 html {
   scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.container {
+  height: 100%;
+  max-width: 960px;
+  border: solid #000 1px;
+  margin: 1rem 1.5rem 1rem;
+  justify-content: space-between;
 }
 
 ul {
@@ -83,21 +97,16 @@ h4 {
   font-weight: var(--font-semibold);
 }
 
-.grid {
-  display: grid;
-  gap: 1rem;
-}
-
-.container {
-  height: 100%;
-  max-width: 960px;
-  border: solid #000 1px;
-  margin: 1rem 1.5rem 1rem;
-  /* display: flex; */
-  justify-content: space-between;
-}
-
 /* Navbar */
+.header {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-fixed);
+  background-color: var(--body-color);
+}
+
 .nav {
   margin: 1rem 1.5rem 1rem;
   display: flex;
@@ -125,14 +134,35 @@ h4 {
   gap: 2rem;
 }
 
-.header {
-  width: 100%;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  z-index: var(--z-fixed);
-  background-color: var(--body-color);
+/* Sections */
+
+/* Container */
+.section-container {
+  gap: 1 rem;
+  padding-top: 4rem;
+  height: 100vh;
+  animation: transitionIn;
+  scroll-snap-align: start;
 }
+
+/* Home */
+.home-content {
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* About */
+.about-content {
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+/* Layout & Media Queries */
 
 @media screen and (max-width: 690px) {
   .list-container {
@@ -174,33 +204,6 @@ h4 {
     margin-left: auto;
     margin-right: auto;
   }
-}
-
-/* Sections */
-
-/* Container */
-.section-container {
-  gap: 1 rem;
-  padding-top: 4rem;
-  height: 100vh;
-  animation: transitionIn;
-  scroll-snap-align: start;
-}
-
-/* Home */
-.home-content {
-  gap: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* About */
-.about-content {
-  gap: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 /* Animations, Effects, Transitions */
