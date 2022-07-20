@@ -82,9 +82,16 @@ h4 {
   gap: 1rem;
 }
 
-.nav-container {
-  border: #000 solid 1px;
-  margin: 2rem 1.5rem 2rem;
+.container {
+  border: solid #000 1px;
+  margin: 1rem 1.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav {
+  /* border: #000 solid 1px; */
+  margin: 1rem 1.5rem 1rem;
   display: flex;
   justify-content: space-between;
 }
@@ -98,6 +105,11 @@ h4 {
 .nav-logo {
   font-size: var(--h1-font-size);
   font-family: "Marck Script";
+}
+
+.menu-btns {
+  display:flex;
+  gap: 1rem;
 }
 
 .nav-list {
