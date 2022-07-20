@@ -6,36 +6,34 @@ const menu = {
     navLink: document.querySelectorAll('#nav-link')
 }
 
-const showMenu = () => {
-    menu.menuToggle.addEventListener('click', () => {
-        menu.navMenu.classList.add('show-menu')
-        // alert('button clicked')
-    })
-}
+const menuActions = () => {
+    if (menu.menuToggle) {
+        menu.menuToggle.addEventListener('click', () => {
+            menu.navMenu.classList.add('show-menu')
+        })
+    }
 
-const closeMenu = () => {
-    menu.menuClose.addEventListener('click', () => {
-        menu.navMenu.classList.remove('show-menu')
-    })
-}
+    if (menu.menuClose) {
+        menu.menuClose.addEventListener('click', () => {
+            menu.navMenu.classList.remove('show-menu')
+        })
+    }
 
-const navLinkCloseMenu = () => {
-    menu.navLink.forEach(n => n.addEventListener('click', () => {
-        menu.navMenu.classList.remove('show-menu')
-    }))
-}
+    if (menu.navLink) {
+        menu.navLink.forEach(n => n.addEventListener('click', () => {
+            menu.navMenu.classList.remove('show-menu')
+        }))
+    }
 
-const closeMenuClickOutside = () => {
-    menu.body.addEventListener('click', (e) => {
-        if (!e.target.closest('#nav-menu')) {
-            if (!e.target.closest('#menu-toggle')) {
-                // alert('clicked outside the menu area')
-                menu.navMenu.classList.remove('show-menu')
+    if (menu.body) {
+        menu.body.addEventListener('click', (e) => {
+            if (!e.target.closest('#nav-menu')) {
+                if (!e.target.closest('#menu-toggle')) {
+                    menu.navMenu.classList.remove('show-menu')
+                }
             }
-        }
-    })
+        })
+    }
 }
-showMenu();
-closeMenu();
-navLinkCloseMenu();
-closeMenuClickOutside();
+
+menuActions();
