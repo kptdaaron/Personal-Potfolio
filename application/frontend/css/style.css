@@ -2,7 +2,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Marck+Script&display=swap");
 
 * {
-  /* box-sizing: border-box; */
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
@@ -59,6 +59,12 @@
 body {
   font-family: "Poppins", sans-serif;
   margin: auto;
+  height: 90vh;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
 }
 
 ul {
@@ -83,14 +89,16 @@ h4 {
 }
 
 .container {
+  height: 100%;
+  max-width: 960px;
   border: solid #000 1px;
   margin: 1rem 1.5rem 1rem;
-  display: flex;
+  /* display: flex; */
   justify-content: space-between;
 }
 
+/* Navbar */
 .nav {
-  /* border: #000 solid 1px; */
   margin: 1rem 1.5rem 1rem;
   display: flex;
   justify-content: space-between;
@@ -108,7 +116,7 @@ h4 {
 }
 
 .menu-btns {
-  display:flex;
+  display: flex;
   gap: 1rem;
 }
 
@@ -126,7 +134,7 @@ h4 {
   background-color: var(--body-color);
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 690px) {
   .list-container {
     position: fixed;
     bottom: -100%;
@@ -140,8 +148,62 @@ h4 {
   }
 }
 
-/* Animations, Effects, Transitions */
+@media screen and (min-width: 691px) {
+  .header {
+    top: 0;
+    position: fixed;
+    bottom: initial;
+  }
 
+  .list-container {
+    display: flex;
+  }
+
+  .nav-list {
+    display: flex;
+  }
+
+  .link-icon,
+  .menu-btns {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .container {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Sections */
+
+/* Container */
+.section-container {
+  gap: 1 rem;
+  padding-top: 4rem;
+  height: 100vh;
+  animation: transitionIn;
+  scroll-snap-align: start;
+}
+
+/* Home */
+.home-content {
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* About */
+.about-content {
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Animations, Effects, Transitions */
 @keyframes transitionIn {
   from {
     opacity: 0;
