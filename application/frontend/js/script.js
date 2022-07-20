@@ -12,4 +12,11 @@ const showMenu = () => {
     })
 }
 
+const closeMenu = () => {
+    menuObject.menuClose.addEventListener('click', () => {
+        menuObject.navMenu.classList.remove('show-menu')
+    })
+}
+
 showMenu();
+closeMenu();
