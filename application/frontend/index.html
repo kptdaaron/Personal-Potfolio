@@ -16,7 +16,7 @@
     <header class="header" id="header">
       <nav class="nav container">
         <a href="#" class="nav-logo">Aaron</a>
-        <div class="list-container">
+        <div class="nav-menu" id="nav-menu">
           <ul class="nav-list grid" id="nav-list">
             <li class="nav-item">
               <a href="#home" class="nav-link"
@@ -44,10 +44,15 @@
               >
             </li>
           </ul>
+          <i class="uil uil-multiply menu-close" id="menu-close"></i>
         </div>
         <div class="menu-btns" id="menu-btns">
-          <i class="uil uil-moon" id="theme-toggle"></i>
-          <i class="uil uil-apps" id="nav-toggle"></i>
+          <div class="theme-toggle" id="theme-toggle">
+            <i class="uil uil-moon nav-icon"></i>
+          </div>
+          <div class="menu-toggle" id="menu-toggle">
+            <i class="uil uil-apps nav-icon"></i>
+          </div>
         </div>
       </nav>
     </header>
@@ -82,5 +87,7 @@
         </div>
       </section>
     </main>
+
+    <script src="./js/script.js"></script>
   </body>
 </html>
