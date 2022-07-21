@@ -115,6 +115,8 @@ h4 {
 
 .nav-link {
   display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .nav-logo,
@@ -138,13 +140,13 @@ h4 {
 .nav-list {
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
+  justify-items: center;
 }
 
 .menu-close {
   position: absolute;
   right: 1.3rem;
   cursor: pointer;
-
 }
 
 /* Need to initialize first before 'show-menu' is called */
@@ -211,7 +213,8 @@ h4 {
   }
 
   .link-icon,
-  .menu-btns {
+  .menu-btns,
+  .menu-close {
     display: none;
   }
 }
